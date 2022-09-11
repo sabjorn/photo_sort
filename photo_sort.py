@@ -2,8 +2,8 @@ import os
 import argparse
 import logging
 import pathlib
-import datetime
 import time
+import hashlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="input directory for photos")
@@ -47,8 +47,11 @@ for f in os.listdir(args.input):
     hour = time.strftime("%H", t_obj)
     minute = time.strftime("%M", t_obj)
     second = time.strftime("%S", t_obj)
-    ms = time.strftime("%f", t_obj)
-    output_filename = f"{year}-{month}-{day}_{hour}.{minute}.{second}.{ms}{ext}"
+
+    m = hashlib.md5()
+    m.update(bytes(f, encoding="utf-8"))
+    hash = m.hexdigest()[:6] 
+    output_filename = f"{year}-{month}-{day}_{hour}.{minute}.{second}.{hash}{ext}"
 
     output_fullpath = os.path.join(output_directory, output_filename)
     logging.debug(f"writing symlink {f} to {output_fullpath}")
